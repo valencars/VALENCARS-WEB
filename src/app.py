@@ -134,7 +134,7 @@ def coche(id):
 
 
 
-@app.route("/inicio", methods=["GET"])
+@app.route("/", methods=["GET"])
 def inicio():
     fotos = ModelUser.todas_fotos(db)
     
@@ -142,8 +142,6 @@ def inicio():
 
     return render_template("inicio.html", images=images)
 
-
-@app.route("/", methods=["GET", "POST"])
 @app.route("/catalogo", methods=["GET", "POST"])
 def catalogo():
     # Obtener parámetros (POST tiene prioridad sobre GET)
