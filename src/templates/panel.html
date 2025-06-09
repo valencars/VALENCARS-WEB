@@ -1,0 +1,162 @@
+{% extends './plantillas/plantilla.html' %}
+{% block title %}Panel de administración{% endblock %}
+{% block main %}
+<div class="min-h-screen bg-white text-black">
+    <!-- Formulario -->
+    <section class="bg-gray-200 p-6 m-4 rounded-lg">
+        <h2 class="text-center font-bold text-lg mb-6">Formulario Coches</h2>
+        <form class="grid grid-cols-1 md:grid-cols-2 gap-4" action="/panel" method="POST" enctype="multipart/form-data" id="form-coche">
+            <input type="text" placeholder="Marca" class="p-2 rounded border" name="marca" required />
+            <input type="text" placeholder="Modelo" class="p-2 rounded border" name="modelo" required />
+            <select name="estado" class="p-2 rounded border" required>
+                <option value="">Selecciona estado</option>
+                <option value="nuevo">Nuevo</option>
+                <option value="usado">Usado</option>
+            </select>
+            <input type="number" placeholder="Precio Contado" class="p-2 rounded border" name="precio_contado" required />
+            <input type="number" placeholder="Precio Financiado" class="p-2 rounded border" name="precio_financiado" required />
+            <select id="yearSelect" name="ano" class="p-2 rounded border" required>
+                <option value="" disabled selected>Año</option>
+            </select>
+            <input type="number" placeholder="Consumo" class="p-2 rounded border" name="consumo" />
+            <select placeholder="Combustible" class="p-2 rounded border" name="combustible" required>
+                <option value="">Selecciona Combustible</option>
+                <option value="gasolina">Gasolina</option>
+                <option value="diesel">Diésel</option>
+                <option value="electrico">Eléctrico</option>
+                <option value="hibrido">Híbrido</option>
+                <option value="hibrido-enchufable">Híbrido enchufable</option>
+            </select>
+            <select name="cambio" class="p-2 rounded border" required>
+                <option value="">Selecciona Cambio</option>
+                <option value="manual">Manual</option>
+                <option value="automatico">Automático</option>
+            </select>
+            <input type="number" placeholder="Kilómetros" class="p-2 rounded border" name="kilometros" required />
+            <input type="number" placeholder="Puertas" class="p-2 rounded border" name="puertas" required />
+            <input type="number" placeholder="Plazas" class="p-2 rounded border" name="plazas" required />
+            <input type="number" placeholder="Motor" class="p-2 rounded border" name="motor" required />
+            <select name="tipo" class="p-2 rounded border" required>
+                <option value="">Selecciona tipo</option>
+                <option value="coche">Coche</option>
+                <option value="furgoneta">Furgoneta</option>
+                <option value="camion">Camion</option>
+            </select>
+            <textarea placeholder="Comentarios del anunciante" class="p-2 rounded border md:row-span-2 resize-none" name="comentario"></textarea>
+            
+            <!-- Input para imágenes con vista previa -->
+            <div class="col-span-full">
+                <label for="imagen-input" class="block mb-2">Subir imágenes:</label>
+                <input type="file" multiple name="fotos[]" id="imagen-input" class="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-black file:text-white
+                hover:file:bg-gray-800
+                transition" required>
+                
+                <!-- Contenedor para vista previa -->
+                <div id="preview-container" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+            </div>
+            
+            <button type="submit" class="col-span-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Enviar</button>
+        </form>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imagenInput = document.getElementById('imagen-input');
+    const previewContainer = document.getElementById('preview-container');
+    const formCoche = document.getElementById('form-coche');
+    let filesArray = [];
+    
+    imagenInput.addEventListener('change', function(e) {
+        previewContainer.innerHTML = '';
+        filesArray = [];
+        
+        const files = e.target.files;
+        if (files.length === 0) return;
+        
+        for (let i = 0; i < files.length; i++) {
+            filesArray.push(files[i]);
+            createPreview(files[i], i);
+        }
+    });
+    
+    function createPreview(file, index) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'relative group overflow-hidden rounded-lg shadow-md';
+            previewDiv.innerHTML = `
+                <img src="${e.target.result}" class="w-full h-40 object-cover transition-transform duration-200 hover:scale-105">
+                <button type="button" data-index="${index}" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100">
+                    ×
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                    <p class="text-white text-xs truncate">${file.name}</p>
+                    <p class="text-white text-xs">${(file.size / 1024).toFixed(2)} KB</p>
+                </div>
+            `;
+            
+            previewContainer.appendChild(previewDiv);
+            
+            // Eliminar imagen
+            const deleteBtn = previewDiv.querySelector('button');
+            deleteBtn.addEventListener('click', function() {
+                filesArray.splice(index, 1);
+                updateFileInput();
+                renderPreviews();
+            });
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    function renderPreviews() {
+        previewContainer.innerHTML = '';
+        filesArray.forEach((file, index) => {
+            createPreview(file, index);
+        });
+    }
+    
+    function updateFileInput() {
+        const dataTransfer = new DataTransfer();
+        filesArray.forEach(file => dataTransfer.items.add(file));
+        imagenInput.files = dataTransfer.files;
+    }
+    
+    // Validación antes de enviar
+    formCoche.addEventListener('submit', function(e) {
+        if (filesArray.length === 0) {
+            e.preventDefault();
+            alert('Por favor, selecciona al menos una imagen');
+            imagenInput.focus();
+        }
+    });
+    
+    const select = document.getElementById("yearSelect");
+    for (let year = 2025; year >= 2000; year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        select.appendChild(option);
+    }
+});
+</script>
+
+<style>
+    #preview-container div {
+        transition: all 0.3s ease;
+    }
+    #preview-container div:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    #preview-container button:hover {
+        background-color: #dc2626;
+    }
+</style>
+{% endblock %}

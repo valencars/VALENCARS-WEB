@@ -1,0 +1,27 @@
+{% extends './plantillas/plantilla.html' %}
+{% block title %}Quienes somos{% endblock %}
+{% block main %}
+
+<!-- Sección "¿Qué es Valencars?" -->
+<section class="text-center px-4 py-10 md:p-10 bg-white">
+    <h2 class="text-2xl md:text-3xl font-bold p-4">¿QUÉ ES VALENCARS?</h2>
+    <hr class="border-black mb-6 border-2 w-3/4 mx-auto md:w-1/4" />
+    <p class="mt-4 text-base md:text-xl max-w-3xl mx-auto">
+        En Valencars tenemos más de 30 años de experiencia en la compra venta de coches de segunda mano y vehículos industriales de ocasión y seminuevos en toda España. Nada sería posible sin el equipo que lo forma, el cual da un trato y un servicio excepcional.
+    </p>
+    <img src="/static/img/imagen_somos.webp" alt="Valencars" class="mt-6 mx-auto rounded-lg w-full max-w-md md:max-w-full">
+</section>
+
+<!-- Sección "Equipo de trabajo" -->
+<section class="text-center px-4 py-10 md:p-10 bg-white">
+    <h2 class="text-2xl md:text-3xl font-bold p-4">EQUIPO DE TRABAJO</h2>
+    <hr class="border-black mb-6 border-2 w-3/4 mx-auto md:w-1/4" />
+    <p class="mt-4 text-base md:text-xl max-w-3xl mx-auto">
+        El equipo de Valencars está formado por un fantástico personal. No tenemos una gran cantidad de trabajadores, pero entre los que somos nos hacemos cargo de los diferentes departamentos de gerencia, ventas, postventa, compras, tasaciones, mantenimiento, reparación, documentaciones, administración, taller y cuidados.
+    </p>
+    <a href="{{ url_for('catalogo' ) }}">
+        <button class="mt-6 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition duration-300">CATÁLOGO</button>
+    </a>
+</section>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends './plantillas/plantilla.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block main %}
+<!-- Por qué comprar -->
+<section class="text-center px-6 py-10 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4">PORQUÉ COMPRAR EN VALENCARS</h2>
+    <hr class="border-black mb-6 border-2" />
+    <p class="text-gray-700 mb-6">En Valencars, nos especializamos en compra y venta de coches de segunda mano de alta calidad, ciendo una amplia gama de vehículos para adaptarse a tus necesidades y presupuesto. Si buscas coches de ocasión a precios competitivos, has llegado al lugar adecuado.</p>
+    <a href=" {{ url_for('catalogo' ) }}" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">Catalogo</a>
+</section>
+
+<!-- Imagen del local -->
+<section class="px-6 mb-10">
+    <img src="/static/img/local.webp" alt="Valencars Local" class="w-800 rounded-md shadow">
+</section>
+
+<!-- Selección de vehículos -->
+<section class="text-center px-6 py-10 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6 text-black">NUESTRA SELECCIÓN DE VEHÍCULOS</h2>
+    <hr class="border-black mb-6 border-2" />
+    <p class="text-gray-700 mb-6">En nuestra empresa, ofrecemos vehículos de segunda mano y vehículos industriales de ocasión con grandes ventajas y descuentos exclusivos para ti. Sabemos lo importante que es encontrar el coche o vehículo ideal a un precio competitivo, por eso nos aseguramos de brindarte opciones de alta calidad, totalmente revisadas y listas para rodar.</p>
+
+    <!-- Iconos de coches -->
+    <div class="flex justify-center gap-10 mb-10">
+        <a href="{{ url_for('catalogo') }}?tipo=coche">
+        <div class="flex flex-col items-center">
+            <img src="/static/icons/car.png" alt="Coches" class="w-40 h-40 mb-2">
+        <span>Coches</span>
+        </a>
+        </div>
+    <div class="flex flex-col items-center">
+        <a href="{{ url_for('catalogo') }}?tipo=furgoneta">
+        <img src="/static/icons/van.png" alt="Furgonetas" class="w-40 h-40 mb-2">
+        <span>Furgonetas</span>
+        </a>
+    </div>
+    </div>
+
+    <!-- Placeholder de carrusel -->
+    <section class="w-full max-w-4xl mx-auto p-6">
+    <div class="relative aspect-square overflow-hidden rounded-lg shadow-lg">
+        <div id="carousel" class="flex transition-transform duration-700 ease-in-out h-full w-full">
+        {% for image in images %}
+        <div class="w-full h-full flex-shrink-0">
+            <img src="{{ url_for('static', filename='' ~ image) }}"
+                alt="Coche {{ loop.index }}"
+                class="w-full h-full object-cover rounded-lg" />
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>
+</section>
+
+<!-- Mapa de ubicación -->
+<section class="text-center px-6 py-10 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4">DONDE ESTAMOS <span class="text-xl">📍</span></h2>
+    <hr class="border-black mb-2 border-2" />
+    <div class="w-full max-w-lg mx-auto h-100 mt-8 mb-6 rounded-md overflow-hidden shadow-lg">
+        <iframe title="Mapa con la ubicación del concesionario" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.3843552714265!2d-0.3938777846471743!3d39.495071571767515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd604579125eb3f9%3A0x14c569861adcebdd!2sValencars%202000%20SL!5e0!3m2!1ses!2ses!4v1712574340501!5m2!1ses!2ses"  class="border-0 w-full h-full"  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    </div>
+</section>
+
+<script>
+const carousel = document.getElementById('carousel');
+const slides = document.querySelectorAll('#carousel > div');
+const total = slides.length;
+let index = 0;
+
+function showSlide(i) {
+  const offset = -i * 100;
+  carousel.style.transform = `translateX(${offset}%)`;
+}
+
+setInterval(() => {
+  index = (index + 1) % total;
+  showSlide(index);
+}, 10000);
+
+</script>
+
+{% endblock %}

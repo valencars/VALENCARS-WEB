@@ -1,0 +1,77 @@
+{% extends './plantillas/plantilla.html' %}
+{% block title %}Contacto{% endblock %}
+{% block main %}
+  <div class="p-6 md:p-10 text-center">
+    <h2 class="text-3xl font-bold mb-4">Contacto valencars</h2>
+    <hr class="border-black mb-6 border-2" />
+    
+    <form action="/contacto" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      {{ form.hidden_tag() }}
+      <div class="flex flex-col">
+        {{ form.nombre.label(class="text-left mb-1") }}
+        {{ form.nombre(class="border p-3 w-full rounded-md", placeholder="Nombre") }}
+        {% for error in form.nombre.errors %}
+            <span style="color:red;">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col">
+        {{ form.email.label(class="text-left mb-1") }}
+        {{ form.email(class="border p-3 w-full rounded-md", placeholder="Correo Electrónico") }}
+        {% for error in form.email.errors %}
+            <span style="color:red;">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col">
+        {{ form.telefono.label(class="text-left mb-1") }}
+        {{ form.telefono(class="border p-3 w-full rounded-md", placeholder="Teléfono") }}
+        {% for error in form.telefono.errors %}
+            <span style="color:red;">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col">
+        {{ form.motivo.label(class="text-left mb-1") }}
+        {{ form.motivo(class="border p-3 w-full rounded-md") }}
+      </div>
+      <div class="flex flex-col md:col-span-2">
+        {{ form.descripcion.label(class_="text-left mb-1") }}
+        {{ form.descripcion(class_="border p-3 w-full h-28 resize-none rounded-md", placeholder="Descripción del motivo", id="descripcion") }}
+        <div class="text-right text-sm text-gray-500 mt-1">
+          <span id="contador">0</span>/200 caracteres
+        </div>
+      </div>
+      {{ form.csrf_token }}
+      
+      
+      {{ form.enviar(class="bg-black text-white px-6 py-3 rounded-md text-lg border border-black hover:bg-blue-600 hover:text-white cursor-pointer transition-colors duration-300 ease-in-out") }}
+
+    </form>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div class="w-full h-72 md:h-96 rounded-md overflow-hidden shadow-lg">
+        <iframe title="Mapa con la ubicación del concesionario" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.3843552714265!2d-0.3938777846471743!3d39.495071571767515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd604579125eb3f9%3A0x14c569861adcebdd!2sValencars%202000%20SL!5e0!3m2!1ses!2ses!4v1712574340501!5m2!1ses!2ses" class="border-0 w-full h-full" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="w-full h-72 md:h-96 rounded-md overflow-hidden shadow-lg">
+        <img src="/static/img/contacto.webp" alt="Foto" class="w-full h-full object-cover rounded-md" />
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const descripcionInput = document.getElementById('descripcion');
+      const contador = document.getElementById('contador');
+      const maxCaracteres = 200;
+
+      descripcionInput.addEventListener('input', () => {
+        const caracteresActuales = descripcionInput.value.length;
+        contador.textContent = caracteresActuales;
+
+        // Cambiar el color si se excede el límite
+        if (caracteresActuales > maxCaracteres) {
+          contador.classList.add('text-red-500');
+        } else {
+          contador.classList.remove('text-red-500');
+        }
+      });
+    });
+  </script>
+{% endblock %}

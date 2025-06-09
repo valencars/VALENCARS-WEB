@@ -1,0 +1,217 @@
+{% extends './plantillas/plantilla.html' %}
+{% block title %}Catalogo{% endblock %}
+{% block main %}
+<div class="flex flex-col lg:flex-row px-4 xl:px-8 py-4 md:py-6 gap-4 md:gap-6">
+    <!-- Filtros - Columna izquierda -->
+    <aside class="w-full h-1/2 lg:w-1/4 bg-white p-4 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold mb-4">Filtros</h2>
+        <form method="POST" action="{{ url_for('catalogo') }}" id="filtros-form" class="space-y-4">
+            <!-- Filtro Marca -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+                <select name="marca" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todas las marcas</option>
+                    {% for marca in marcas %}
+                    <option value="{{ marca }}" {% if filtros_actuales.marca == marca %}selected{% endif %}>
+                        {{ marca }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filtro Precio -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Precio (€)</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="number" name="precio_contado_min" 
+                        value="{{ filtros_actuales.precio_min }}"
+                        placeholder="Mínimo" 
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="number" name="precio_contado_max" 
+                        value="{{ filtros_actuales.precio_max }}"
+                        placeholder="Máximo" 
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            <style>
+            summary {
+                cursor: pointer;
+            }
+            </style>
+
+            <label class="block text-sm font-medium text-gray-700 mb-1">Año Desde</label>
+            <details id="anio_min_details" class="relative w-full mb-4 border border-gray-300 rounded-md">
+            <summary id="anio_min_summary" class="p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Desde
+            </summary>
+            <ul class="absolute z-10 mt-1 w-full max-h-60 overflow-auto bg-white border border-gray-300 rounded-md shadow-lg">
+                {% for year in range(2025, 1999, -1) %}
+                <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer select-none" data-value="{{ year }}">{{ year }}</li>
+                {% endfor %}
+            </ul>
+            </details>
+            <input type="hidden" name="anio_min" id="anio_min_input" value="">
+
+            <label class="block text-sm font-medium text-gray-700 mb-1">Año Hasta</label>
+            <details id="anio_max_details" class="relative w-full mb-4 border border-gray-300 rounded-md">
+            <summary id="anio_max_summary" class="p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Hasta
+            </summary>
+            <ul class="absolute z-10 mt-1 w-full max-h-60 overflow-auto bg-white border border-gray-300 rounded-md shadow-lg">
+                {% for year in range(2025, 1999, -1) %}
+                <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer select-none" data-value="{{ year }}">{{ year }}</li>
+                {% endfor %}
+            </ul>
+            </details>
+            <input type="hidden" name="anio_max" id="anio_max_input" value="">
+            <!-- Filtro Tipo -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                <select name="tipo" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos los tipos</option>
+                    {% for t in tipos %}
+                    <option value="{{ t }}" {% if filtros_actuales.tipo == t %}selected{% endif %}>
+                        {{ t }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filtro Cambio -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cambio</label>
+                <select name="cambio" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos los cambios</option>
+                    {% for c in cambios %}
+                    <option value="{{ c }}" {% if filtros_actuales.cambio == c %}selected{% endif %}>
+                        {{ c }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Filtro Combustible -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Combustible</label>
+                <select name="combustible" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos los tipos</option>
+                    {% for comb in combustibles %}
+                    <option value="{{ comb }}" {% if filtros_actuales.combustible == comb %}selected{% endif %}>
+                        {{ comb }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{{ url_for('catalogo') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md text-center transition-colors duration-200">
+                    Limpiar Filtros
+                </a>
+            </div>
+        </form>
+    </aside>
+
+    <!-- Contenido principal - Columna derecha -->
+    <main class="w-full lg:w-3/4">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Concesionario de coches de segunda mano</h2>
+        
+        <!-- Grid de coches -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+            {% for coche in coches %}
+            <a href="/coche/{{ coche[0] }}" class="group">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                    <div class="relative flex-shrink-0">
+                        <!-- Imagen del coche -->
+                        <img 
+                            src="{{ url_for('static', filename=coche.6) }}" 
+                            alt="{{ coche.1 }} {{ coche.2 }}"
+                            class="w-full h-48 sm:h-56 object-cover group-hover:opacity-90 transition-opacity duration-300"
+                        >
+                        <!-- Etiqueta de precio -->
+                        <div class="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
+                            {{ "{:,.0f}".format(coche.3)|replace(',', '.') }}€
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-grow">
+                        <!-- Marca y modelo -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200">
+                            {{ coche.1 }} {{ coche.2 }}
+                        </h3>
+                        
+                        <!-- Detalles -->
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="bg-gray-100 px-3 py-1 rounded-full text-xs sm:text-sm text-gray-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {{ coche.4 }}
+                            </span>
+                            
+                            <span class="bg-gray-100 px-3 py-1 rounded-full text-xs sm:text-sm text-gray-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                {{ coche.5 }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        {% if pagination.pages > 1 %}
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center space-x-1 sm:space-x-2">
+                {% if pagination.page > 1 %}
+                <a href="{{ url_for('catalogo', page=pagination.page-1, **filtros_actuales) }}"
+                    class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 text-sm sm:text-base">
+                    &laquo; Anterior
+                </a>
+                {% endif %}
+
+                {% for p in range(1, pagination.pages + 1) %}
+                <a href="{{ url_for('catalogo', page=p, **filtros_actuales) }}"
+                    class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 text-sm sm:text-base {% if p == pagination.page %}bg-blue-600 text-white border-blue-600 hover:bg-blue-700{% endif %}">
+                    {{ p }}
+                </a>
+                {% endfor %}
+
+                {% if pagination.page < pagination.pages %}
+                <a href="{{ url_for('catalogo', page=pagination.page+1, **filtros_actuales) }}"
+                    class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 text-sm sm:text-base">
+                    Siguiente &raquo;
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+    function setupCustomSelect(detailsId, summaryId, inputId) {
+    const details = document.getElementById(detailsId);
+    const summary = document.getElementById(summaryId);
+    const input = document.getElementById(inputId);
+    const options = details.querySelectorAll('li');
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const value = option.getAttribute('data-value');
+        summary.textContent = value;
+        input.value = value;
+        details.removeAttribute('open');
+      });
+    });
+  }
+
+  setupCustomSelect('anio_min_details', 'anio_min_summary', 'anio_min_input');
+  setupCustomSelect('anio_max_details', 'anio_max_summary', 'anio_max_input');
+</script>
+{% endblock %}

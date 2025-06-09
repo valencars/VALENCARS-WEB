@@ -1,0 +1,43 @@
+{% extends './plantillas/plantilla.html' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block main %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
+        <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-6">administrador</h2>
+
+        <form action="/register" method="POST" class="space-y-5">
+            <!-- Usuario -->
+            <div>
+                {{ form.nombre.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    {{ form.nombre(class="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-sm") }}
+                </div>
+                {{ form.email.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    {{ form.email(class="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-sm") }}
+                </div>
+                {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    {{ form.password(class="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-sm") }}
+                </div>
+                {{ form.es_super_admin.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    {{ form.es_super_admin(class="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-sm") }}
+                </div>
+                {{form.enviar(class="w-full bg-black text-white py-2 rounded-md text-sm font-semibold hover:bg-gray-900 transition")}}
+            </div>
+{% endblock %}

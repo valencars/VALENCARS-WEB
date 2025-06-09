@@ -1,0 +1,22 @@
+{% extends './plantillas/plantilla.html' %}
+
+{% block title %}Página no encontrada - Valencars{% endblock %}
+
+{% block main %}
+<main class="flex flex-col items-center justify-center min-h-[75vh] text-center p-6">
+    <!-- Título grande -->
+    <h1 class="text-6xl font-bold text-red-600 mb-2">404</h1>
+    <p class="text-xl font-semibold mb-6">Oops... No hemos encontrado esta página.</p>
+
+    <!-- Animación coche triste SVG -->
+    <div class="w-60 animate-bounce mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" fill="currentColor" class="text-gray-600">
+            <path d="M544 192h-16l-32-96a64.06 64.06 0 0 0-60.12-44H204.12A64.06 64.06 0 0 0 144 96l-32 96h-16a96 96 0 0 0-96 96v80a32 32 0 0 0 32 32h48a64 64 0 0 0 128 0h224a64 64 0 0 0 128 0h48a32 32 0 0 0 32-32v-80a96 96 0 0 0-96-96ZM208 80h224a32 32 0 0 1 30.12 21.37L498.75 192H141.25l36.63-90.63A32 32 0 0 1 208 80ZM144 432a32 32 0 1 1 32-32 32 32 0 0 1-32 32Zm352 0a32 32 0 1 1 32-32 32 32 0 0 1-32 32Z"/>
+        </svg>
+        <p class="text-gray-500 text-sm italic mt-2">Este coche no encuentra el camino...</p>
+    </div>
+
+<!-- Botón de volver al inicio -->
+    <a href="{{ url_for('inicio' ) }}" class="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition">Volver a la página principal</a>
+</main>
+{% endblock %}

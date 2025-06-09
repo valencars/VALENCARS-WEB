@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Valencars, concesionario en Valencia especializado en coches nuevos y de ocasión. Encuentra las mejores ofertas, financiación a medida y servicio postventa. ¡Visítanos hoy!">
+    <title> {% block title %}{% endblock %}</title>
+    <link rel="icon" type="image/webp" href="{{ url_for('static', filename='img/favicon.webp') }}" sizes="16x16"/>
+    <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/fontawesome.min.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- jQuery (Toastr lo necesita) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="min-h-screen flex flex-col text-black">
+    <!-- Header -->
+    {% if current_user.is_authenticated %}
+    <!-- Header -->
+    <header class="bg-black text-white p-4 flex justify-between items-center">
+        <span class="font-bold text-lg">{{current_user.nombre}}</span>
+        <nav class="space-x-4">
+            <a href="{{ url_for('panel' ) }}" class="hover:underline">Inicio</a>
+            <a href="{{ url_for('register' ) }}">Register</a>
+            <a href="{{ url_for('ver_vehiculos' ) }}">Vehiculos</a>
+            <a href="{{ url_for('ver_mensajes' ) }}" class="hover:underline">Solicitudes</a>
+            <a href="{{ url_for('logout' ) }}" class="hover:underline">Cerrar sesión</a>
+        </nav>
+    </header>
+    {% else %}
+    <header class="bg-black py-4 w-full relative z-50">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <!-- Logo alineado a la izquierda -->
+            <a href="{{ url_for('inicio' ) }}">
+            <div class="flex items-center space-x-2">
+                    <img class="w-14" src="{{url_for('static', filename='img/logo.webp')}}" alt="logo valencars">
+                    <h1 class="text-white font-bold text-lg">VALENCARS</h1>
+            </div>
+            </a>
+    
+            <!-- Botón hamburguesa solo visible en móvil -->
+            <div class="md:hidden">
+                <button aria-label="Abrir menú de navegación" id="menu-toggle" class="text-white focus:outline-none">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+    
+            <!-- Menú visible solo en escritorio -->
+            <nav class="hidden md:flex flex-wrap justify-end items-center w-3/5">
+                <div class="flex space-x-6 items-center">
+                    <a href="{{ url_for('inicio') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 md:p-3 transition-all duration-300 ease-in-out transform hover:scale-105">INICIO</a>
+                    <a href="{{ url_for('somos') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 md:p-3 transition-all duration-300 ease-in-out transform hover:scale-105">QUIÉNES SOMOS</a>
+                    <a href="{{ url_for('contacto') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 md:p-3 transition-all duration-300 ease-in-out transform hover:scale-105">CONTACTO</a>
+                    <a href="{{ url_for('catalogo') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 md:p-3 transition-all duration-300 ease-in-out transform hover:scale-105">CATÁLOGO</a>
+                    <a href="{{ url_for('vender') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 md:p-3 transition-all duration-300 ease-in-out transform hover:scale-105">VENDER TU COCHE</a>
+                </div>
+            </nav>
+
+            <!-- Menú lateral desde la derecha -->
+            <div id="side-menu" class="fixed top-0 right-0 h-full w-64 bg-black transform translate-x-full transition-transform duration-300 ease-in-out md:hidden z-40">
+                <div class="p-6 flex flex-col space-y-4 h-full">
+                    <button aria-label="cerrar menú de navegación" id="close-menu" class="text-white self-end text-2xl">✕</button>
+                    <a href="{{ url_for('inicio') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 transition-all duration-300 ease-in-out transform hover:scale-105">INICIO</a>
+                    <a href="{{ url_for('somos') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 transition-all duration-300 ease-in-out transform hover:scale-105">QUIÉNES SOMOS</a>
+                    <a href="{{ url_for('contacto') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 transition-all duration-300 ease-in-out transform hover:scale-105">CONTACTO</a>
+                    <a href="{{ url_for('catalogo') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 transition-all duration-300 ease-in-out transform hover:scale-105">CATÁLOGO</a>
+                    <a href="{{ url_for('vender') }}" class="text-white hover:bg-white hover:rounded hover:text-black p-2 transition-all duration-300 ease-in-out transform hover:scale-105">VENDER TU COCHE</a>
+                </div>
+            </div>
+    </header>
+    {% endif %}
+    
+
+    
+    <!-- Script para abrir/cerrar menú y capturar clic fuera -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const sideMenu = document.getElementById('side-menu');
+        const overlay = document.getElementById('overlay');
+    
+        const closeSideMenu = () => {
+            sideMenu.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+        };
+    
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+        });
+    
+        closeMenu.addEventListener('click', closeSideMenu);
+        overlay.addEventListener('click', closeSideMenu);
+
+
+    </script>    
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block main %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-black text-white text-center p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            <!-- Redes sociales -->
+            <div>
+                <h1 class="font-semibold">Nuestras redes sociales</h1>
+                <div class="flex justify-center space-x-2 mt-2 bg-black p-2 rounded">
+                    <i class="fa-brands fa-whatsapp text-white"></i>
+                    <i class="fa-brands fa-instagram text-white"></i>
+                    <i class="fa-brands fa-facebook text-white"></i>
+                </div>                
+            </div>
+            <!-- Ubicación -->
+            <div>
+                <h1 class="font-semibold">Ubicación</h1>
+                <p>Av. de Ecuador 56, 46025</p>
+                <p>Benicalap (Valencia)</p>
+            </div>
+            <!-- Información -->
+            <div>
+                <h1 class="font-semibold">Información</h1>
+                <p>962 118 240</p>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@valencars.net" target="_blank" rel="noopener noreferrer">admin@valencars.net</a>
+
+            </div>
+            <!-- Horario -->
+            <div>
+                <h1 class="font-semibold">Horario</h1>
+                <p>Lunes - Viernes</p>
+                <p>9:00h - 14:00h | 16:00h - 20:30h</p>
+                <p>Sábado</p>
+                <p>10:00h - 14:00h</p>
+            </div>
+        </div>
+    </footer>
+    <div id="flash-messages"
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            data-messages='{{ messages | tojson | safe }}'
+        {% endwith %}>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashDiv = document.getElementById('flash-messages');
+            const messages = JSON.parse(flashDiv.dataset.messages || '[]');
+
+            messages.forEach(([category, message]) => {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right"
+                };
+                toastr[category](message);
+            });
+        });
+    </script>
+</body>
+</html>

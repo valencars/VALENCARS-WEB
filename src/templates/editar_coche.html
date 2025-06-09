@@ -1,0 +1,91 @@
+{% extends './plantillas/plantilla.html' %}
+{% block title %}Editar Coche{% endblock %}
+{% block main %}
+<div class="min-h-screen bg-white text-black">
+    <!-- Formulario -->
+    <section class="bg-gray-200 p-6 m-4 rounded-lg">
+        <h2 class="text-center font-bold text-lg mb-6">Editar Coche (ID: {{ coche.0 }})</h2>
+        <form class="grid grid-cols-1 md:grid-cols-2 gap-4" action="/panel/editar/{{ coche.0 }}" method="POST" enctype="multipart/form-data">
+            <!-- Campos del formulario -->
+            <input type="text" placeholder="Marca" class="p-2 rounded border" name="marca" value="{{ coche.1 }}" />
+            <input type="text" placeholder="Modelo" class="p-2 rounded border" name="modelo" value="{{ coche.2 }}" />
+            
+            <select name="estado" class="p-2 rounded border">
+                <option value="">Selecciona estado</option>
+                <option value="nuevo" {% if coche.estado == 'nuevo' %}selected{% endif %}>Nuevo</option>
+                <option value="usado" {% if coche.estado == 'usado' %}selected{% endif %}>Usado</option>
+            </select>
+            
+            <input type="number" placeholder="Precio Contado" class="p-2 rounded border" name="precio_contado" value="{{ coche.9 }}" />
+            <input type="number" placeholder="Precio Financiado" class="p-2 rounded border" name="precio_financiado" value="{{ coche.4 }}" />
+            <input type="text" min="1900" max="2025" placeholder="Año" class="p-2 rounded border" name="ano" value="{{ coche.3 }}"/>
+            <input type="number" placeholder="Consumo" class="p-2 rounded border" name="consumo" value="{{ coche.10 }}" />
+            <input type="text" placeholder="Combustible" class="p-2 rounded border" name="combustible" value="{{ coche.12 }}"/>
+            <input type="text" placeholder="Cambio" class="p-2 rounded border" name="cambio" value="{{ coche.11 }}" />
+            <input type="number" placeholder="Kilómetros" class="p-2 rounded border" name="kilometros" value="{{ coche.13 }}" />
+            <input type="number" placeholder="Puertas" class="p-2 rounded border" name="puertas" value="{{ coche.14 }}" />
+            <input type="number" placeholder="plazas" class="p-2 rounded border" name="plazas" value="{{ coche.15 }}" />
+            <input type="number" placeholder="Motor" class="p-2 rounded border" name="motor" value="{{ coche.8 }}" />
+            <select name="tipo" class="p-2 rounded border" required>
+                <option value="">Selecciona tipo</option>
+                <option value="coche">Coche</option>
+                <option value="furgoneta">Furgoneta</option>
+                <option value="camion">Camion</option>
+            </select>
+            <textarea placeholder="Comentarios del anunciante" class="p-2 rounded border md:row-span-2 resize-none" name="comentario">{{ coche.6 }}</textarea>            
+            <!-- Fotos existentes -->
+            <div class="md:col-span-2">
+                <h3 class="font-medium mb-2">Fotos actuales:</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
+                    {% for foto in fotos %}
+                    <div class="relative">
+                        <img src="{{ url_for('static', filename=foto[2]) }}" class="w-80 h-80 object-cover rounded">
+                        <button type="button" 
+                                onclick="eliminarFoto('{{ foto.0 }}')"
+                                class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                            ×
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Subir nuevas fotos -->
+            <div class="md:col-span-2">
+                <label for="imagen" class="block mb-2">Añadir más imágenes:</label>
+                <input type="file" multiple name="fotos[]" class="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-black file:text-white
+                hover:file:bg-gray-800
+                transition">
+            </div>
+            
+            <div class="md:col-span-2 flex justify-end gap-4">
+                <a href="{{ url_for('ver_vehiculos') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script>
+function eliminarFoto(fotoId) {
+    if(confirm('¿Estás seguro de eliminar esta foto?')) {
+        fetch(`/panel/eliminar-foto/${fotoId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if(response.ok) {
+                location.reload(); // Recargar para ver cambios
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

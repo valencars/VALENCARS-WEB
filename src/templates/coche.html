@@ -1,0 +1,172 @@
+{% extends './plantillas/plantilla.html' %}
+
+{% block title %}Coche{% endblock %}
+
+{% block main %}
+
+<!-- Main Section -->
+<section class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white">
+  <!-- Car Image & Thumbnails -->
+  <div class="flex flex-col items-center">
+    <!-- Carrusel de imágenes -->
+    <div class="relative w-full max-w-md aspect-square overflow-hidden">
+      <div id="carousel" class="carousel-container flex transition-transform duration-700 ease-in-out h-full">
+        {% for image in images %}
+        <div class="carousel-item w-full h-full flex-shrink-0">
+          <img 
+            src="{{ url_for('static', filename=image) }}" 
+            alt="Coche" 
+            class="w-full h-full object-contain rounded-md"/>
+        </div>
+        {% endfor %}
+      </div>
+
+    
+      <!-- Botones -->
+      <button id="prev" aria-label="Imagen anterior" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full z-10">
+        &#8249;
+      </button>
+      <button id="next" aria-label="Imagen siguiente" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full z-10">
+        &#8250;
+      </button>
+    </div>
+    
+
+    <!-- Thumbnails -->
+    <div class="flex space-x-2 mt-4">
+      {% for image in images %}
+        <div class="thumbnail w-14 h-14 cursor-pointer bg-gray-300 border border-black rounded-md">
+          <img 
+            src="{{ url_for('static', filename=image) }}" 
+            alt="Thumbnail" 
+            class="w-full h-full object-cover rounded-md" onclick="changeImage(`{{ loop.index0 }}`)"/>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Car Info -->
+  <div class="flex flex-col justify-center">
+    <h2 class="text-2xl font-bold mb-1"> {{datos['marca']}} {{datos['modelo']}}</h2>
+
+    <div class="w-full max-w-md">
+      <hr class="h-[2px] bg-black border-0 my-4" />
+      <p class="text-lg text-gray-700 mb-6">{{datos['anio']}} año | {{datos['motor']}}cv | {{ "{:,.0f}".format(datos['kilometros']).replace(",", ".") }}km | {{datos['combustible']}}</p>
+    </div>
+
+    <div class="mb-6">
+      <p class="text-sm">Precio financiado:</p>
+      <p class="text-3xl font-bold text-black">{{ "{:,.0f}".format(datos['precio_financiado']).replace(",", ".") }}€</p>
+      <p class="text-sm mt-2 text-gray-500">Precio al contado: <span class="line-through">{{ "{:,.0f}".format(datos['precio_contado']).replace(",", ".")}}€</span></p>
+    </div>
+
+    <a href="{{ url_for('contacto' ) }}" class="bg-black text-white px-6 py-2 rounded text-sm w-fit">Más información</a>
+  </div>
+</section>
+
+<!-- Divider Line -->
+<hr class="h-[2px] bg-black border-0 my-6 mx-8" />
+
+<!-- Ejemplo con iconos -->
+{% set claves_mostrar = ['estado', 'consumo', 'cambio', 'combustible', 'puertas', 'plazas', 'descripcion'] %}
+{% set iconos = {
+  'estado': 'fa-car',
+  'consumo': 'fa-gas-pump',
+  'cambio': 'fa-cogs',
+  'combustible': 'fa-burn',
+  'puertas': 'fa-door-closed',
+  'descripcion': 'fa-align-left',
+  'plazas': 'fa-users'
+} %}
+<section class="px-8 pb-8 grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8 text-center text-sm">
+  {% for clave in claves_mostrar %}
+    {% if clave in datos %}
+      <div {% if clave == 'descripcion' %}class="col-span-2 md:col-span-3"{% endif %}>
+        <p class="text-gray-500 uppercase flex items-center justify-center gap-2">
+          <i class="fas {{ iconos[clave] }}"></i> {{ clave }}
+        </p>
+        {% if clave == 'consumo' %}
+          <p class="text-gray-700">{{ datos[clave] }} L/100km </p>
+        {% else %}
+        <p class="font-semibold">{{ datos[clave] }}</p>
+        {% endif %} 
+      </div>
+    {% endif %}
+  {% endfor %}
+</section>
+
+
+
+
+<!-- Script del carrusel -->
+<script>
+  let currentIndex = 0;
+  let carouselContainer;
+  let images;
+  let totalImages;
+  let thumbnails;
+  let autoplayInterval;
+
+  function showImage(index) {
+    const offset = -index * 100;
+    carouselContainer.style.transform = `translateX(${offset}%)`;
+
+    thumbnails.forEach((thumb, i) => {
+      if (i === index) {
+        thumb.classList.add('ring-2', 'ring-blue-500', 'bg-white');
+      } else {
+        thumb.classList.remove('ring-2', 'ring-blue-500', 'bg-white');
+      }
+    });
+  }
+
+  function changeImage(index) {
+    currentIndex = index;
+    showImage(currentIndex);
+  }
+
+  window.changeImage = changeImage;
+
+  function startAutoplay() {
+    autoplayInterval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % totalImages;
+      showImage(currentIndex);
+    }, 9000);
+  }
+
+  function stopAutoplay() {
+    clearInterval(autoplayInterval);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    carouselContainer = document.querySelector('#carousel');
+    images = document.querySelectorAll('.carousel-item');
+    totalImages = images.length;
+    thumbnails = document.querySelectorAll('.thumbnail img');
+
+    // Asegura que cada item tenga el 100% del ancho
+    images.forEach(image => {
+      image.style.flex = '0 0 100%';
+    });
+
+    showImage(currentIndex);
+    startAutoplay();
+
+    // Botones
+    document.getElementById('prev').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+      showImage(currentIndex);
+    });
+
+    document.getElementById('next').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % totalImages;
+      showImage(currentIndex);
+    });
+
+    carouselContainer.addEventListener('mouseover', stopAutoplay);
+    carouselContainer.addEventListener('mouseleave', startAutoplay);
+  });
+</script>
+{% endblock %}
+
+
