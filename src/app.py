@@ -205,7 +205,6 @@ def catalogo():
                             'per_page': per_page
                         })
 
-import os
 
 @app.route('/panel/editar/<int:coche_id>', methods=['GET', 'POST'])
 def editar_coche(coche_id):
