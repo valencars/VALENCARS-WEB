@@ -205,25 +205,20 @@ def catalogo():
                             'per_page': per_page
                         })
 
+import os
+
 @app.route('/panel/editar/<int:coche_id>', methods=['GET', 'POST'])
 def editar_coche(coche_id):
-    if request.method == 'GET':
-        coche = ModelUser.obtener_coche_por_id(db, coche_id)
-        fotos = ModelUser.obtener_fotos_por_coche(db, coche_id)
-
-        if not coche:
-            flash('Coche no encontrado', 'warning')
-            return redirect(url_for('panel_admin'))
-            
-        return render_template('editar_coche.html', coche=coche, fotos=fotos)
-    
-    elif request.method == 'POST':
+    if request.method == 'POST':
         datos = request.form.to_dict()
         fotos = request.files.getlist('fotos[]')
 
-        STATIC_DIR = "/static"  # Ruta del volumen montado
-        carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
-        os.makedirs(carpeta_final, exist_ok=True)
+        # Ruta del directorio actual (donde está tu script Flask)
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        # Ruta absoluta a la carpeta static/uploads/<coche_id>
+        carpeta_final = os.path.join(BASE_DIR, 'static', 'uploads', str(coche_id))
+        os.makedirs(carpeta_final, exist_ok=True)  # ✅ crea la carpeta si no existe
 
         cursor = db.connection.cursor()
         for foto in fotos:
@@ -232,15 +227,12 @@ def editar_coche(coche_id):
                 ruta_destino = os.path.join(carpeta_final, filename)
                 foto.save(ruta_destino)
 
-                # Ruta relativa a STATIC_DIR → "uploads/<coche_id>/<archivo>"
-                ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
-                cursor.execute(
-                    "INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)",
-                    (coche_id, ruta_relativa)
-                )
+                # Ruta relativa desde static para url_for('static', ...)
+                ruta_relativa = os.path.relpath(ruta_destino, os.path.join(BASE_DIR, 'static')).replace("\\", "/")
 
-        db.connection.commit()  # No olvides esto para guardar los inserts
+                cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
 
+        db.connection.commit()
         ModelUser.actualizar_coche(db, coche_id, datos, fotos)
         flash('Coche actualizado correctamente', 'success')
         return redirect(url_for('panel'))
