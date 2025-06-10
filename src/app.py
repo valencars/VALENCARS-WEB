@@ -39,7 +39,7 @@ def load_user(id):
         
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    return send_from_directory(os.path.join(DISCO_RENDER, 'uploads'), filename)
+    return send_from_directory('/var/data/uploads', filename)
 
 @app.route("/solicitudes", methods=["GET"])
 def solicitudes():
