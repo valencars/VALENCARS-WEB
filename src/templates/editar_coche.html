@@ -39,7 +39,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
                     {% for foto in fotos %}
                     <div class="relative">
-                        <img src="{{ url_for('static', filename=foto[2]) }}" class="w-80 h-80 object-cover rounded">
+                        <img src="{{ url_for('uploaded_file', filename=foto[2]) }}" class="w-80 h-80 object-cover rounded">
                         <button type="button" 
                                 onclick="eliminarFoto('{{ foto.0 }}')"
                                 class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
