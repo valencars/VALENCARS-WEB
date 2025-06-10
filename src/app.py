@@ -208,9 +208,9 @@ def catalogo():
 @app.route('/panel/editar/<int:coche_id>', methods=['GET', 'POST'])
 def editar_coche(coche_id):
     if request.method == 'GET':
-        # Obtener datos del coche
         coche = ModelUser.obtener_coche_por_id(db, coche_id)
         fotos = ModelUser.obtener_fotos_por_coche(db, coche_id)
+
         if not coche:
             flash('Coche no encontrado', 'warning')
             return redirect(url_for('panel_admin'))
@@ -218,27 +218,33 @@ def editar_coche(coche_id):
         return render_template('editar_coche.html', coche=coche, fotos=fotos)
     
     elif request.method == 'POST':
-        # Procesar actualización
         datos = request.form.to_dict()
         fotos = request.files.getlist('fotos[]')
-        
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        STATIC_DIR = "/static"
-        fotos = request.files.getlist('fotos[]')
+
+        STATIC_DIR = "/static"  # Ruta del volumen montado
         carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
+
         cursor = db.connection.cursor()
         for foto in fotos:
-                if foto and foto.filename != '':
-                    filename = secure_filename(foto.filename)
-                    ruta_destino = os.path.join(carpeta_final, filename)
-                    foto.save(ruta_destino)
-                    ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
-                    cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
+            if foto and foto.filename != '':
+                filename = secure_filename(foto.filename)
+                ruta_destino = os.path.join(carpeta_final, filename)
+                foto.save(ruta_destino)
+
+                # Ruta relativa a STATIC_DIR → "uploads/<coche_id>/<archivo>"
+                ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
+                cursor.execute(
+                    "INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)",
+                    (coche_id, ruta_relativa)
+                )
+
+        db.connection.commit()  # No olvides esto para guardar los inserts
 
         ModelUser.actualizar_coche(db, coche_id, datos, fotos)
         flash('Coche actualizado correctamente', 'success')
         return redirect(url_for('panel'))
+
 
 
 @app.route('/panel/eliminar-foto/<int:foto_id>', methods=['DELETE'])
@@ -304,19 +310,22 @@ def panel():
             combustible, kilometros, puertas, plazas,tipo
         )
 
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        STATIC_DIR = "/static"
+        STATIC_DIR = "/static"  # Ruta donde Render montó el disco
         fotos = request.files.getlist('fotos[]')
         carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
         cursor = db.connection.cursor()
+        
         for foto in fotos:
-                if foto and foto.filename != '':
-                    filename = secure_filename(foto.filename)
-                    ruta_destino = os.path.join(carpeta_final, filename)
-                    foto.save(ruta_destino)
-                    ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
-                    cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
+            if foto and foto.filename != '':
+                filename = secure_filename(foto.filename)
+                ruta_destino = os.path.join(carpeta_final, filename)
+                foto.save(ruta_destino)
+        
+                # Guardamos ruta relativa a /static → "uploads/5/foto.jpg"
+                ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
+                cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
+
 
     if not coche_id:
         flash("Error al insertar el coche", "danger")
