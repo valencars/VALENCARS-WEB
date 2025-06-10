@@ -223,7 +223,7 @@ def editar_coche(coche_id):
         fotos = request.files.getlist('fotos[]')
         
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        STATIC_DIR = os.path.join(BASE_DIR, "static")
+        STATIC_DIR = "/static"
         fotos = request.files.getlist('fotos[]')
         carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
@@ -305,7 +305,7 @@ def panel():
         )
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        STATIC_DIR = os.path.join(BASE_DIR, "static")
+        STATIC_DIR = "/static"
         fotos = request.files.getlist('fotos[]')
         carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
