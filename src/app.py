@@ -206,17 +206,16 @@ def catalogo():
                         })
 
 
+# Define la ruta absoluta donde Render monta el disco persistente
+DISCO_RENDER = '/var/data'
+
 @app.route('/panel/editar/<int:coche_id>', methods=['GET', 'POST'])
 def editar_coche(coche_id):
     if request.method == 'POST':
         datos = request.form.to_dict()
         fotos = request.files.getlist('fotos[]')
 
-        # Ruta absoluta del disco montado en Render
-        STATIC_DIR = '/static'
-
-        # Carpeta donde guardar imágenes para este coche
-        carpeta_final = os.path.join(STATIC_DIR, 'uploads', str(coche_id))
+        carpeta_final = os.path.join(DISCO_RENDER, 'uploads', str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
 
         cursor = db.connection.cursor()
@@ -230,8 +229,7 @@ def editar_coche(coche_id):
                 except Exception as e:
                     print(f"Error guardando imagen: {e}")
 
-                # Guardamos la ruta relativa para url_for('static', filename=...)
-                # Desde la carpeta /static, la ruta sería: uploads/<coche_id>/nombre.jpg
+                # Guardamos la ruta relativa desde el disco para url_for('static', ...)
                 ruta_relativa = os.path.join('uploads', str(coche_id), filename).replace('\\', '/')
 
                 cursor.execute(
@@ -245,15 +243,12 @@ def editar_coche(coche_id):
         return redirect(url_for('panel'))
 
     else:
-        # GET - manejo normal
         coche = ModelUser.obtener_coche_por_id(db, coche_id)
         fotos = ModelUser.obtener_fotos_por_coche(db, coche_id)
         if not coche:
             flash('Coche no encontrado', 'warning')
             return redirect(url_for('panel_admin'))
         return render_template('editar_coche.html', coche=coche, fotos=fotos)
-
-
 
 
 @app.route('/panel/eliminar-foto/<int:foto_id>', methods=['DELETE'])
@@ -290,11 +285,12 @@ def panel():
     if not has_access:
         flash("Sesion no válida. Inicia sesion nuevamente", "warning")
         return redirect(url_for("login"))
+
     if request.method == 'GET':
         if not current_user.is_authenticated:
             return redirect(url_for("login"))
         return render_template("panel.html")
-        
+
     if request.method == "POST":
         marca = request.form.get('marca')
         modelo = request.form.get('modelo')
@@ -312,37 +308,38 @@ def panel():
         plazas = request.form.get('plazas')
         tipo = request.form.get('tipo')
 
-
         coche_id = ModelUser.agregar_coche(
             db, marca, modelo, anio, precio_contado, precio_financiado, estado,
-            descripcion,motor, consumo, cambio,
-            combustible, kilometros, puertas, plazas,tipo
+            descripcion, motor, consumo, cambio,
+            combustible, kilometros, puertas, plazas, tipo
         )
 
-        STATIC_DIR = "/static"  # Ruta donde Render montó el disco
-        fotos = request.files.getlist('fotos[]')
-        carpeta_final = os.path.join(STATIC_DIR, "uploads", str(coche_id))
+        if not coche_id:
+            flash("Error al insertar el coche", "danger")
+            return redirect(url_for('panel'))
+
+        carpeta_final = os.path.join(DISCO_RENDER, "uploads", str(coche_id))
         os.makedirs(carpeta_final, exist_ok=True)
         cursor = db.connection.cursor()
-        
+
+        fotos = request.files.getlist('fotos[]')
         for foto in fotos:
             if foto and foto.filename != '':
                 filename = secure_filename(foto.filename)
                 ruta_destino = os.path.join(carpeta_final, filename)
-                foto.save(ruta_destino)
-        
-                # Guardamos ruta relativa a /static → "uploads/5/foto.jpg"
-                ruta_relativa = os.path.relpath(ruta_destino, STATIC_DIR).replace("\\", "/")
+
+                try:
+                    foto.save(ruta_destino)
+                except Exception as e:
+                    print(f"Error guardando imagen: {e}")
+
+                ruta_relativa = os.path.join('uploads', str(coche_id), filename).replace('\\', '/')
                 cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
 
+        db.connection.commit()
 
-    if not coche_id:
-        flash("Error al insertar el coche", "danger")
+        flash("Coche e imágenes insertados correctamente", "success")
         return redirect(url_for('panel'))
-
-
-    flash("Coche e imágenes insertados correctamente", "success")
-    return redirect(url_for('panel'))
 
 
 @app.route('/vehiculos', methods=["POST", "GET"])
