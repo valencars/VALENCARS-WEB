@@ -15,7 +15,7 @@
         <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <!-- Imagen principal -->
             <div class="relative">
-                <img src="{{ url_for('static', filename=fotos[0]) if fotos else url_for('static', filename='img/no_image.jpg') }}" 
+                <img src="{{ url_for('uploaded_file', filename=fotos[0]) if fotos else url_for('static', filename='img/no_image.jpg') }}" 
                      class="w-full h-48 object-cover"
                      alt="{{ coche[1] }} {{ coche[2] }}">
                 <div class="absolute bottom-2 left-2 bg-blue-600 text-white px-2 py-1 rounded-md text-sm font-semibold">
