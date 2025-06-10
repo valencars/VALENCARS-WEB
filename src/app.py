@@ -1,4 +1,4 @@
-from flask import Flask, app, request, jsonify, render_template, redirect, url_for,flash, make_response, current_app
+from flask import Flask, app, request, jsonify, render_template, redirect, url_for,flash, make_response, current_app,send_from_directory
 from numpy import imag
 from forms import loginform, contactsForm, registerform
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
