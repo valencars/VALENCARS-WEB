@@ -36,6 +36,9 @@ def inject_toastr():
 def load_user(id):
     return ModelUser.get_by_id(db, id)
         
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(os.path.join(DISCO_RENDER, 'uploads'), filename)
 
 @app.route("/solicitudes", methods=["GET"])
 def solicitudes():
