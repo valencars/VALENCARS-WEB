@@ -23,7 +23,8 @@ db = MySQL(app)
 toastr = Toastr(app)
 
 
-
+# Define la ruta absoluta donde Render monta el disco persistente
+DISCO_RENDER = '/var/data'
 
 
 login_manager = LoginManager(app)
@@ -208,9 +209,6 @@ def catalogo():
                             'per_page': per_page
                         })
 
-
-# Define la ruta absoluta donde Render monta el disco persistente
-DISCO_RENDER = '/var/data'
 
 @app.route('/panel/editar/<int:coche_id>', methods=['GET', 'POST'])
 def editar_coche(coche_id):
