@@ -212,29 +212,47 @@ def editar_coche(coche_id):
         datos = request.form.to_dict()
         fotos = request.files.getlist('fotos[]')
 
-        # Ruta del directorio actual (donde está tu script Flask)
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        # Ruta absoluta del disco montado en Render
+        STATIC_DIR = '/static'
 
-        # Ruta absoluta a la carpeta static/uploads/<coche_id>
-        carpeta_final = os.path.join(BASE_DIR, 'static', 'uploads', str(coche_id))
-        os.makedirs(carpeta_final, exist_ok=True)  # ✅ crea la carpeta si no existe
+        # Carpeta donde guardar imágenes para este coche
+        carpeta_final = os.path.join(STATIC_DIR, 'uploads', str(coche_id))
+        os.makedirs(carpeta_final, exist_ok=True)
 
         cursor = db.connection.cursor()
         for foto in fotos:
             if foto and foto.filename != '':
                 filename = secure_filename(foto.filename)
                 ruta_destino = os.path.join(carpeta_final, filename)
-                foto.save(ruta_destino)
 
-                # Ruta relativa desde static para url_for('static', ...)
-                ruta_relativa = os.path.relpath(ruta_destino, os.path.join(BASE_DIR, 'static')).replace("\\", "/")
+                try:
+                    foto.save(ruta_destino)
+                except Exception as e:
+                    print(f"Error guardando imagen: {e}")
 
-                cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
+                # Guardamos la ruta relativa para url_for('static', filename=...)
+                # Desde la carpeta /static, la ruta sería: uploads/<coche_id>/nombre.jpg
+                ruta_relativa = os.path.join('uploads', str(coche_id), filename).replace('\\', '/')
+
+                cursor.execute(
+                    "INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)",
+                    (coche_id, ruta_relativa)
+                )
 
         db.connection.commit()
         ModelUser.actualizar_coche(db, coche_id, datos, fotos)
         flash('Coche actualizado correctamente', 'success')
         return redirect(url_for('panel'))
+
+    else:
+        # GET - manejo normal
+        coche = ModelUser.obtener_coche_por_id(db, coche_id)
+        fotos = ModelUser.obtener_fotos_por_coche(db, coche_id)
+        if not coche:
+            flash('Coche no encontrado', 'warning')
+            return redirect(url_for('panel_admin'))
+        return render_template('editar_coche.html', coche=coche, fotos=fotos)
+
 
 
 
