@@ -231,7 +231,7 @@ def editar_coche(coche_id):
                     print(f"Error guardando imagen: {e}")
 
                 # Guardamos la ruta relativa desde el disco para url_for('static', ...)
-                ruta_relativa = os.path.join('uploads', str(coche_id), filename).replace('\\', '/')
+                ruta_relativa = os.path.join(str(coche_id), filename).replace('\\', '/')
 
                 cursor.execute(
                     "INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)",
@@ -334,8 +334,9 @@ def panel():
                 except Exception as e:
                     print(f"Error guardando imagen: {e}")
 
-                ruta_relativa = os.path.join('uploads', str(coche_id), filename).replace('\\', '/')
+                ruta_relativa = os.path.join(str(coche_id), filename).replace('\\', '/')
                 cursor.execute("INSERT INTO fotos (coche_id, ruta) VALUES (%s, %s)", (coche_id, ruta_relativa))
+
 
         db.connection.commit()
 
