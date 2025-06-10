@@ -28,9 +28,9 @@
             <input type="number" placeholder="Motor" class="p-2 rounded border" name="motor" value="{{ coche.8 }}" />
             <select name="tipo" class="p-2 rounded border" required>
                 <option value="">Selecciona tipo</option>
-                <option value="coche" {% if coche.16 == 'coche' %}selected{% endif %}>Coche</option>
-                <option value="furgoneta" {% if coche.16 == 'furgoneta' %}selected{% endif %}>Furgoneta</option>
-                <option value="camion" {% if coche.16 == 'camion' %}selected{% endif %}>Camion</option>
+                <option value="coche" {% if coche[16] == 'coche' %}selected{% endif %}>Coche</option>
+                <option value="furgoneta" {% if coche[16] == 'furgoneta' %}selected{% endif %}>Furgoneta</option>
+                <option value="camion" {% if coche[16] == 'camion' %}selected{% endif %}>Camion</option>
             </select>
             <textarea placeholder="Comentarios del anunciante" class="p-2 rounded border md:row-span-2 resize-none" name="comentario">{{ coche.6 }}</textarea>            
             <!-- Fotos existentes -->
