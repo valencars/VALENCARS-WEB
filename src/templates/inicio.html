@@ -44,7 +44,7 @@
         <div id="carousel" class="flex transition-transform duration-700 ease-in-out h-full w-full">
         {% for image in images %}
         <div class="w-full h-full flex-shrink-0">
-            <img src="{{ url_for('static', filename='' ~ image) }}"
+            <img src="{{ url_for('uploaded_file', filename='' ~ image) }}"
                 alt="Coche {{ loop.index }}"
                 class="w-full h-full object-cover rounded-lg" />
         </div>
