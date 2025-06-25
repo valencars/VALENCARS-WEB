@@ -6,10 +6,11 @@
 
 <!-- Main Section -->
 <section class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white">
-  <!-- Car Image & Thumbnails -->
+
+  <!-- 📸 Columna de Imágenes -->
   <div class="flex flex-col items-center">
-    <!-- Carrusel de imágenes -->
-    <div class="relative w-full max-w-md aspect-square overflow-hidden">
+    <!-- Carrusel -->
+    <div class="relative w-full max-w-md h-72 overflow-hidden">
       <div id="carousel" class="carousel-container flex transition-transform duration-700 ease-in-out h-full">
         {% for image in images %}
         <div class="carousel-item w-full h-full flex-shrink-0">
@@ -21,8 +22,7 @@
         {% endfor %}
       </div>
 
-    
-      <!-- Botones -->
+      <!-- Botones carrusel -->
       <button id="prev" aria-label="Imagen anterior" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full z-10">
         &#8249;
       </button>
@@ -30,41 +30,43 @@
         &#8250;
       </button>
     </div>
-    
 
-<!-- Thumbnails con scroll horizontal -->
-<div class="flex overflow-x-auto space-x-2 mt-4 max-w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-  {% for image in images %}
-    <div class="thumbnail flex-shrink-0 w-14 h-14 cursor-pointer bg-gray-300 border border-black rounded-md">
-      <img 
-        src="{{ url_for('uploaded_file', filename=image) }}" 
-        alt="Thumbnail" 
-        class="w-full h-full object-cover rounded-md" onclick="changeImage(`{{ loop.index0 }}`)"/>
+    <!-- Miniaturas con scroll horizontal -->
+    <div class="flex overflow-x-auto space-x-2 mt-4 max-w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+      {% for image in images %}
+        <div class="thumbnail flex-shrink-0 w-14 h-14 cursor-pointer bg-gray-300 border border-black rounded-md">
+          <img 
+            src="{{ url_for('uploaded_file', filename=image) }}" 
+            alt="Thumbnail" 
+            class="w-full h-full object-cover rounded-md" onclick="changeImage(`{{ loop.index0 }}`)"/>
+        </div>
+      {% endfor %}
     </div>
-  {% endfor %}
-</div>
+  </div>
 
-
-  <!-- Car Info -->
+  <!-- 📝 Columna de Información -->
   <div class="flex flex-col justify-center">
-    <h2 class="text-2xl font-bold mb-1"> {{datos['marca']}} {{datos['modelo']}}</h2>
+    <h2 class="text-2xl font-bold mb-1"> {{ datos['marca'] }} {{ datos['modelo'] }}</h2>
 
     <div class="w-full max-w-md">
       <hr class="h-[2px] bg-black border-0 my-4" />
-      <p class="text-lg text-gray-700 mb-6">{{datos['anio']}} año | {{datos['motor']}}cv | {{ "{:,.0f}".format(datos['kilometros']).replace(",", ".") }}km | {{datos['combustible']}}</p>
+      <p class="text-lg text-gray-700 mb-6">
+        {{ datos['anio'] }} año | {{ datos['motor'] }}cv | 
+        {{ "{:,.0f}".format(datos['kilometros']).replace(",", ".") }}km | {{ datos['combustible'] }}
+      </p>
     </div>
 
-<div class="mb-6">
-  <p class="text-sm mb-1">Precios:</p>
-  <p class="text-2xl font-bold text-black">
-    {{ "{:,.0f}".format(datos['precio_financiado']).replace(",", ".") }}€
-    <span class="text-base font-normal text-gray-700 ml-4">
-      Al contado: {{ "{:,.0f}".format(datos['precio_contado']).replace(",", ".") }}€
-    </span>
-  </p>
-</div>
+    <div class="mb-6">
+      <p class="text-sm mb-1">Precios:</p>
+      <p class="text-2xl font-bold text-black">
+        {{ "{:,.0f}".format(datos['precio_financiado']).replace(",", ".") }}€
+        <span class="text-base font-normal text-gray-700 ml-4">
+          Al contado: {{ "{:,.0f}".format(datos['precio_contado']).replace(",", ".") }}€
+        </span>
+      </p>
+    </div>
 
-    <a href="{{ url_for('contacto' ) }}" class="bg-black text-white px-6 py-2 rounded text-sm w-fit">Más información</a>
+    <a href="{{ url_for('contacto') }}" class="bg-black text-white px-6 py-2 rounded text-sm w-fit">Más información</a>
   </div>
 </section>
 
